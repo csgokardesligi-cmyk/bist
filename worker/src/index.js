@@ -40,10 +40,23 @@ function json(body, env, status = 200, cacheSeconds = CACHE_SECONDS) {
 
 /** PostgREST'e sorgu. Anahtar burada kalir, disari cikmaz. */
 async function sb(env, path) {
-  const res = await fetch(`${env.SUPABASE_URL}/rest/v1/${path}`, {
+  // Panele yapistirirken degerlerin sonuna bosluk/yeni satir/egik cizgi
+  // yapismasi cok yaygin — burada temizliyoruz ki her seferinde patlamasin.
+  const base = (env.SUPABASE_URL || "").trim().replace(/\/+$/, "");
+  const key = (env.SUPABASE_SERVICE_KEY || "").trim();
+
+  if (!base || !key) {
+    throw new Error(
+      "SUPABASE_URL veya SUPABASE_SERVICE_KEY tanimli degil. " +
+        "Cloudflare -> Settings -> Variables and Secrets altina " +
+        "Secret olarak ekle, sonra yeniden deploy et."
+    );
+  }
+
+  const res = await fetch(`${base}/rest/v1/${path}`, {
     headers: {
-      apikey: env.SUPABASE_SERVICE_KEY,
-      Authorization: `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+      apikey: key,
+      Authorization: `Bearer ${key}`,
       Accept: "application/json",
     },
   });
