@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ASELS — sapma paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12151a; --panel:#191d24; --panel2:#1e232b; --line:#2a303a;
+    --text:#e7e9ec; --dim:#838d9b; --dimmer:#566072;
+    --steel:#5b8fb0; --up:#4f9b72; --down:#c1584f; --watch:#c89b3c;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:14px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:460px; margin:0 auto; padding:20px 16px 56px}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
+
+  /* ---------- baslik ---------- */
+  header{display:flex; align-items:baseline; justify-content:space-between;
+         padding-bottom:14px; border-bottom:1px solid var(--line)}
+  .sym{font-size:19px; font-weight:600; letter-spacing:.02em}
+  .sym small{display:block; font-size:11px; font-weight:400; color:var(--dimmer); letter-spacing:0}
+  .px{text-align:right}
+  .px .val{font-size:22px; font-weight:500}
+  .px .chg{font-size:12px}
+
+  .label{font-size:11px; color:var(--dimmer); margin:26px 0 8px; letter-spacing:.04em}
+  .panel{background:var(--panel); border:1px solid var(--line); padding:16px}
+
+  /* ---------- gauge ---------- */
+  .gauge{display:block; margin:0 auto; width:100%; max-width:300px}
+  .zval{text-align:center; margin-top:-38px; margin-bottom:10px}
+  .zval .n{font-size:34px; font-weight:500; line-height:1}
+  .zval .u{font-size:12px; color:var(--dim); margin-top:3px}
+  .zrow{display:flex; justify-content:space-between; gap:8px;
+        border-top:1px solid var(--line); padding-top:12px; margin-top:6px}
+  .zrow div{flex:1; text-align:center}
+  .zrow .k{font-size:10px; color:var(--dimmer); margin-bottom:4px}
+  .zrow .v{font-size:14px}
+
+  /* ---------- istatistik ---------- */
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line);
+        border:1px solid var(--line)}
+  .cell{background:var(--panel); padding:11px 13px}
+  .cell .k{font-size:10px; color:var(--dimmer); margin-bottom:3px}
+  .cell .v{font-size:15px}
+
+  /* ---------- gecmis ---------- */
+  .chart{width:100%; height:130px; display:block}
+  .legend{display:flex; gap:14px; font-size:10px; color:var(--dimmer); margin-top:9px}
+  .legend i{display:inline-block; width:14px; height:1px; background:var(--dimmer);
+            vertical-align:middle; margin-right:5px}
+
+  /* ---------- viop ---------- */
+  .row{display:flex; justify-content:space-between; align-items:center;
+       padding:9px 0; border-bottom:1px solid var(--line); font-size:13px}
+  .row:last-child{border-bottom:none}
+  .row .c{color:var(--dim)}
+
+  .up{color:var(--up)} .down{color:var(--down)} .steel{color:var(--steel)}
+  .watch{color:var(--watch)} .dim{color:var(--dim)}
+
+  .note{margin-top:28px; padding:13px 14px; border:1px solid var(--line);
+        background:var(--panel2); font-size:11.5px; line-height:1.65; color:var(--dim)}
+  .note b{color:var(--text); font-weight:500}
+  .stamp{margin-top:14px; font-size:10.5px; color:var(--dimmer); text-align:center}
+  .err{border-color:var(--down); color:var(--down)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="sym">ASELS<small>Aselsan Elektronik</small></div>
+    <div class="px">
+      <div class="val mono" id="price">—</div>
+      <div class="chg mono dim" id="change">veri bekleniyor</div>
+    </div>
+  </header>
+
+  <div class="label">Sapma skoru</div>
+  <div class="panel">
+    <svg class="gauge" viewBox="0 0 300 158" id="gauge" aria-hidden="true"></svg>
+    <div class="zval">
+      <div class="n mono" id="zval">—</div>
+      <div class="u" id="zdesc">hesaplanıyor</div>
+    </div>
+    <div class="zrow">
+      <div><div class="k">Bugünkü hareket</div><div class="v mono" id="mv">—</div></div>
+      <div><div class="k">20g ortalama</div><div class="v mono" id="mean">—</div></div>
+      <div><div class="k">Volatilite</div><div class="v mono" id="volp">—</div></div>
+    </div>
+  </div>
+
+  <div class="label">Gün verisi</div>
+  <div class="grid">
+    <div class="cell"><div class="k">Açılış</div><div class="v mono" id="open">—</div></div>
+    <div class="cell"><div class="k">Önceki kapanış</div><div class="v mono" id="prev">—</div></div>
+    <div class="cell"><div class="k">Gün içi yüksek</div><div class="v mono" id="hi">—</div></div>
+    <div class="cell"><div class="k">Gün içi düşük</div><div class="v mono" id="lo">—</div></div>
+    <div class="cell"><div class="k">ATR (14)</div><div class="v mono" id="atr">—</div></div>
+    <div class="cell"><div class="k">Hacim</div><div class="v mono" id="vol">—</div></div>
+  </div>
+
+  <div class="label">Son 60 günün sapması</div>
+  <div class="panel">
+    <svg class="chart" viewBox="0 0 420 130" preserveAspectRatio="none" id="hist"></svg>
+    <div class="legend">
+      <span><i style="background:var(--steel)"></i>z-skoru</span>
+      <span><i style="background:var(--watch)"></i>±2σ eşiği</span>
+    </div>
+  </div>
+
+  <div class="label">VİOP kontratları</div>
+  <div class="panel" id="viop"><div class="dim" style="font-size:12.5px">yükleniyor…</div></div>
+
+  <div class="note" id="note">
+    <b>Bu panelde ne var, ne yok.</b> Sapma skoru, gün verisi ve geçmiş grafiği
+    gerçek veriden hesaplanıyor. VİOP bölümü İş Yatırım kaynaklı, yaklaşık 15
+    dakika gecikmeli ve yalnızca o anki durumu gösteriyor — geriye dönük geçmişi
+    toplayıcı çalıştıkça birikiyor. Kurum akışı, varant akışı, alarm kuralları ve
+    sinyal başarı takibi <b>henüz bağlı değil</b>; o bölümler kasıtlı olarak
+    eklenmedi, çünkü olmayan veriyi dolu göstermek en kötü seçenek olurdu.
+    Eşikler (±2σ, 20 gün, ATR 14) sektör varsayılanı, ASELSAN'a optimize edilmedi.
+  </div>
+
+  <div class="stamp" id="stamp"></div>
+</div>
+
+<script>
+// ------------------------------------------------------------------
+// Worker adresini buraya yaz (wrangler deploy ciktisindaki adres)
+const API = "https://bist-api.KULLANICI-ADIN.workers.dev";
+const SYMBOL = "ASELS";
+// ------------------------------------------------------------------
+
+const $ = id => document.getElementById(id);
+const nf = (v, d = 2) =>
+  v === null || v === undefined || isNaN(v)
+    ? "—"
+    : Number(v).toLocaleString("tr-TR", { minimumFractionDigits: d, maximumFractionDigits: d });
+
+function zClass(z) {
+  if (z === null || z === undefined) return "dim";
+  if (Math.abs(z) >= 2) return z > 0 ? "up" : "down";
+  if (Math.abs(z) >= 1) return "watch";
+  return "steel";
+}
+function zText(z) {
+  if (z === null || z === undefined) return "referans dağılımı yetersiz";
+  const a = Math.abs(z);
+  if (a >= 3) return "tarihsel normun çok dışında";
+  if (a >= 2) return "normun dışında";
+  if (a >= 1) return "normun üst bandında";
+  return "normal aralıkta";
+}
+
+/* yarim daire gauge: -3σ .. +3σ */
+function drawGauge(z) {
+  const cx = 150, cy = 140, r = 108;
+  const pt = (frac) => {
+    const a = Math.PI * (1 - frac);
+    return [cx + r * Math.cos(a), cy - r * Math.sin(a)];
+  };
+  let s = `<path d="M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}"
+           fill="none" stroke="var(--line)" stroke-width="9"/>`;
+
+  // -2σ ve +2σ esik isaretleri
+  [-2, 2].forEach(t => {
+    const f = (t + 3) / 6, [x, y] = pt(f);
+    const [ix, iy] = [cx + (r - 13) * Math.cos(Math.PI * (1 - f)),
+                      cy - (r - 13) * Math.sin(Math.PI * (1 - f))];
+    s += `<line x1="${ix}" y1="${iy}" x2="${x}" y2="${y}"
+           stroke="var(--watch)" stroke-width="2"/>`;
+  });
+
+  if (z !== null && z !== undefined) {
+    const c = Math.max(-3, Math.min(3, z));
+    const f = (c + 3) / 6;
+    const [x, y] = pt(f);
+    const col = { up: "--up", down: "--down", watch: "--watch", steel: "--steel" }[zClass(z)];
+    const large = f > 0.5 ? 0 : 0;
+    const [sx, sy] = pt(0.5);
+    // merkezden (0σ) mevcut degere yay
+    s += `<path d="M ${sx} ${sy} A ${r} ${r} 0 ${large} ${f > 0.5 ? 1 : 0} ${x} ${y}"
+           fill="none" stroke="var(${col})" stroke-width="9" stroke-linecap="butt"/>`;
+    s += `<circle cx="${x}" cy="${y}" r="6" fill="var(${col})"/>`;
+  }
+  s += `<text x="${cx - r}" y="156" fill="var(--dimmer)" font-size="10"
+         font-family="IBM Plex Mono" text-anchor="middle">-3σ</text>
+        <text x="${cx}" y="156" fill="var(--dimmer)" font-size="10"
+         font-family="IBM Plex Mono" text-anchor="middle">0</text>
+        <text x="${cx + r}" y="156" fill="var(--dimmer)" font-size="10"
+         font-family="IBM Plex Mono" text-anchor="middle">+3σ</text>`;
+  $("gauge").innerHTML = s;
+}
+
+function drawHistory(rows) {
+  const pts = rows.filter(r => r.z_score !== null);
+  if (!pts.length) { $("hist").innerHTML = ""; return; }
+  const W = 420, H = 130, pad = 6;
+  const lim = Math.max(3, ...pts.map(p => Math.abs(p.z_score)));
+  const x = i => pad + (i * (W - 2 * pad)) / Math.max(1, pts.length - 1);
+  const y = v => H / 2 - (v / lim) * (H / 2 - pad);
+
+  let s = `<line x1="0" y1="${y(0)}" x2="${W}" y2="${y(0)}"
+           stroke="var(--line)" stroke-width="1"/>`;
+  [2, -2].forEach(t => {
+    s += `<line x1="0" y1="${y(t)}" x2="${W}" y2="${y(t)}" stroke="var(--watch)"
+           stroke-width="1" stroke-dasharray="3 4" opacity=".55"/>`;
+  });
+  s += `<polyline fill="none" stroke="var(--steel)" stroke-width="1.6"
+         points="${pts.map((p, i) => `${x(i)},${y(p.z_score)}`).join(" ")}"/>`;
+  pts.forEach((p, i) => {
+    if (Math.abs(p.z_score) >= 2)
+      s += `<circle cx="${x(i)}" cy="${y(p.z_score)}" r="2.8"
+             fill="${p.z_score > 0 ? "var(--up)" : "var(--down)"}"/>`;
+  });
+  $("hist").innerHTML = s;
+}
+
+function render(d) {
+  const m = d.metrics, q = d.quote;
+  const last = q?.last ?? m?.close;
+  $("price").textContent = nf(last);
+
+  const chg = q?.change_percent ?? m?.ret_pct;
+  if (chg !== null && chg !== undefined) {
+    $("change").textContent = (chg > 0 ? "+" : "") + nf(chg) + "%";
+    $("change").className = "chg mono " + (chg > 0 ? "up" : chg < 0 ? "down" : "dim");
+  }
+
+  const z = m?.z_score ?? null;
+  drawGauge(z);
+  $("zval").textContent = z === null ? "—" : (z > 0 ? "+" : "") + nf(z);
+  $("zval").className = "n mono " + zClass(z);
+  $("zdesc").textContent = zText(z);
+
+  $("mv").textContent = m?.ret_pct === undefined ? "—" : nf(m.ret_pct) + "%";
+  $("mean").textContent = m?.ret_mean_20 === undefined ? "—" : nf(m.ret_mean_20) + "%";
+  $("volp").textContent = m?.vol_percentile == null ? "—" : nf(m.vol_percentile, 0) + ". yüzdelik";
+
+  $("open").textContent = nf(q?.open ?? m?.open);
+  $("prev").textContent = nf(m?.prev_close);
+  $("hi").textContent = nf(q?.high ?? m?.high);
+  $("lo").textContent = nf(q?.low ?? m?.low);
+  $("atr").textContent = nf(m?.atr14);
+  const v = q?.volume ?? m?.volume;
+  $("vol").textContent = v ? (v / 1e6).toFixed(1) + "M" : "—";
+
+  const vp = $("viop");
+  if (!d.viop.length) {
+    vp.innerHTML = `<div class="dim" style="font-size:12.5px">Henüz VİOP verisi
+      toplanmadı. Toplayıcı borsa açıkken çalıştığında burası dolacak.</div>`;
+  } else {
+    vp.innerHTML = d.viop.map(c => `
+      <div class="row">
+        <div><div class="mono">${c.code}</div>
+             <div class="c" style="font-size:11px">${c.contract ?? ""}</div></div>
+        <div style="text-align:right">
+          <div class="mono">${nf(c.price)}</div>
+          <div class="mono ${c.change > 0 ? "up" : c.change < 0 ? "down" : "dim"}"
+               style="font-size:11px">${c.change > 0 ? "+" : ""}${nf(c.change)}</div>
+        </div>
+      </div>`).join("");
+  }
+
+  $("stamp").textContent =
+    "son güncelleme " + new Date(d.served_at).toLocaleString("tr-TR") +
+    " · veri ~15 dk gecikmeli";
+}
+
+async function load() {
+  try {
+    const [snap, hist] = await Promise.all([
+      fetch(`${API}/api/snapshot?symbol=${SYMBOL}`).then(r => r.json()),
+      fetch(`${API}/api/history?symbol=${SYMBOL}&days=60`).then(r => r.json()),
+    ]);
+    if (snap.error) throw new Error(snap.error);
+    render(snap);
+    drawHistory(hist.rows || []);
+  } catch (e) {
+    const n = $("note");
+    n.classList.add("err");
+    n.innerHTML = `<b>Veri alınamadı.</b> ${e.message}<br>
+      Worker adresi doğru mu, API sabitini kontrol et.`;
+  }
+}
+
+load();
+setInterval(load, 60000);
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+name = "bist-api"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+# Panelin adresi. Pages'i kurduktan sonra burayi kendi adresinle degistir,
+# "*" birakirsan API'yi herkes cagirabilir.
+ALLOWED_ORIGIN = "*"
+
+# Secret'lar buraya YAZILMAZ. Komut satirindan:
+#   npx wrangler secret put SUPABASE_URL
+#   npx wrangler secret put SUPABASE_SERVICE_KEY
