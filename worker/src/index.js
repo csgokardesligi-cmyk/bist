@@ -64,7 +64,10 @@ async function snapshot(env, symbol) {
   const [metrics, quote, viop] = await Promise.all([
     sb(env, `latest_metrics?symbol=eq.${symbol}`),
     sb(env, `latest_quote?symbol=eq.${symbol}`),
-    sb(env, `latest_viop?underlying=eq.${symbol}&order=volume_tl.desc&limit=6`),
+    // NOT: kaynaktaki sutun isimleri kaymis gorunuyor — volume_tl alani
+    // yuzde degisim tasiyor (negatif degerler var), gercek hacim volume_qty'de.
+    // Ham veri kaynaktaki isimle saklaniyor, siralamayi burada duzeltiyoruz.
+    sb(env, `latest_viop?underlying=eq.${symbol}&order=volume_qty.desc&limit=6`),
   ]);
   return {
     symbol,
