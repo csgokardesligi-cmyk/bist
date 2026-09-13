@@ -14,60 +14,61 @@
     --steel:#5b8fb0; --up:#4f9b72; --down:#c1584f; --watch:#c89b3c;
   }
   *{box-sizing:border-box}
-  body{
-    margin:0; background:var(--bg); color:var(--text);
-    font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:14px;
-    -webkit-font-smoothing:antialiased;
-  }
-  .wrap{max-width:460px; margin:0 auto; padding:20px 16px 56px}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0; background:var(--bg); color:var(--text);
+       font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:14px;
+       -webkit-font-smoothing:antialiased}
   .mono{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
+  .up{color:var(--up)} .down{color:var(--down)} .steel{color:var(--steel)}
+  .watch{color:var(--watch)} .dim{color:var(--dim)}
 
-  /* ---------- baslik ---------- */
-  header{display:flex; align-items:baseline; justify-content:space-between;
-         padding-bottom:14px; border-bottom:1px solid var(--line)}
+  /* ================= MOBIL ================= */
+  .wrap{max-width:460px; margin:0 auto; padding:18px 15px 52px}
+
+  .top{display:flex; align-items:baseline; justify-content:space-between;
+       padding-bottom:13px; border-bottom:1px solid var(--line)}
   .sym{font-size:19px; font-weight:600; letter-spacing:.02em}
-  .sym small{display:block; font-size:11px; font-weight:400; color:var(--dimmer); letter-spacing:0}
+  .sym small{display:block; font-size:11px; font-weight:400;
+             color:var(--dimmer); letter-spacing:0}
   .px{text-align:right}
-  .px .val{font-size:22px; font-weight:500}
+  .px .val{font-size:23px; font-weight:500}
   .px .chg{font-size:12px}
+  .top .clock{display:none}
 
-  .label{font-size:11px; color:var(--dimmer); margin:26px 0 8px; letter-spacing:.04em}
-  .panel{background:var(--panel); border:1px solid var(--line); padding:16px}
+  /* sekmeler */
+  .tabs{display:flex; gap:22px; border-bottom:1px solid var(--line); margin-top:14px}
+  .tabs button{background:none; border:none; color:var(--dimmer); font:inherit;
+               font-size:13px; padding:9px 0 10px; cursor:pointer;
+               border-bottom:2px solid transparent; margin-bottom:-1px}
+  .tabs button:hover{color:var(--dim)}
+  .tabs button[aria-selected="true"]{color:var(--text); border-bottom-color:var(--steel)}
+  .tabs button:focus-visible{outline:1px solid var(--steel); outline-offset:3px}
 
-  /* ---------- gauge ---------- */
-  .gauge{display:block; margin:0 auto; width:100%; max-width:300px}
-  .zval{text-align:center; margin-top:-38px; margin-bottom:10px}
-  .zval .n{font-size:34px; font-weight:500; line-height:1}
+  .label{font-size:11px; color:var(--dimmer); margin:24px 0 8px; letter-spacing:.04em}
+  .panel{background:var(--panel); border:1px solid var(--line); padding:15px}
+  .panel.klik{cursor:pointer}
+  .panel.klik:hover{border-color:var(--dimmer)}
+
+  .gauge{display:block; margin:0 auto; width:100%; max-width:290px}
+  .zval{text-align:center; margin:-36px 0 10px}
+  .zval .n{font-size:33px; font-weight:500; line-height:1}
   .zval .u{font-size:12px; color:var(--dim); margin-top:3px}
-  .zrow{display:flex; justify-content:space-between; gap:8px;
-        border-top:1px solid var(--line); padding-top:12px; margin-top:6px}
+  .zrow{display:flex; border-top:1px solid var(--line); padding-top:12px; margin-top:4px}
   .zrow div{flex:1; text-align:center}
   .zrow .k{font-size:10px; color:var(--dimmer); margin-bottom:4px}
   .zrow .v{font-size:14px}
 
-  /* ---------- istatistik ---------- */
-  .grid{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line);
-        border:1px solid var(--line)}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:1px;
+        background:var(--line); border:1px solid var(--line)}
   .cell{background:var(--panel); padding:11px 13px}
   .cell .k{font-size:10px; color:var(--dimmer); margin-bottom:3px}
   .cell .v{font-size:15px}
 
-  /* ---------- gecmis ---------- */
-  .chart{width:100%; height:130px; display:block}
+  .chart{width:100%; height:126px; display:block}
   .legend{display:flex; gap:14px; font-size:10px; color:var(--dimmer); margin-top:9px}
-  .legend i{display:inline-block; width:14px; height:1px; background:var(--dimmer);
+  .legend i{display:inline-block; width:14px; height:1px;
             vertical-align:middle; margin-right:5px}
 
-  /* ---------- viop ---------- */
-  .row{display:flex; justify-content:space-between; align-items:center;
-       padding:9px 0; border-bottom:1px solid var(--line); font-size:13px}
-  .row:last-child{border-bottom:none}
-  .row .c{color:var(--dim)}
-
-  .up{color:var(--up)} .down{color:var(--down)} .steel{color:var(--steel)}
-  .watch{color:var(--watch)} .dim{color:var(--dim)}
-
-  /* ---------- tahmin ---------- */
   .fc-head{display:flex; justify-content:space-between; align-items:baseline;
            padding-bottom:11px; border-bottom:1px solid var(--line)}
   .fc-head .kova{font-size:13px}
@@ -81,92 +82,250 @@
        position:relative; margin:9px 0 5px}
   .bar span{position:absolute; top:0; bottom:0; background:var(--steel)}
   .bar i{position:absolute; top:-3px; bottom:-3px; width:1px; background:var(--dim)}
+  .scale{font-size:10px; color:var(--dimmer); display:flex; justify-content:space-between}
   .fc-foot{font-size:11px; color:var(--dim); line-height:1.6;
-           border-top:1px solid var(--line); padding-top:11px}
+           border-top:1px solid var(--line); padding-top:11px; margin-top:9px}
+  .fc-foot .ac{color:var(--steel)}
 
-  .note{margin-top:28px; padding:13px 14px; border:1px solid var(--line);
+  .row{display:flex; justify-content:space-between; align-items:center;
+       padding:9px 0; border-bottom:1px solid var(--line); font-size:13px}
+  .row:last-child{border-bottom:none}
+  .row .c{color:var(--dim); font-size:11px}
+
+  .bs{display:flex; gap:14px}
+  .bs > div{flex:1}
+  .bs .k{font-size:10px; color:var(--dimmer); margin-bottom:4px}
+  .bs .v{font-size:19px}
+  .bs .s{font-size:10.5px; color:var(--dimmer); margin-top:3px}
+
+  .note{margin-top:26px; padding:13px 14px; border:1px solid var(--line);
         background:var(--panel2); font-size:11.5px; line-height:1.65; color:var(--dim)}
   .note b{color:var(--text); font-weight:500}
-  .stamp{margin-top:14px; font-size:10.5px; color:var(--dimmer); text-align:center}
-  .err{border-color:var(--down); color:var(--down)}
+  .note.err{border-color:var(--down); color:var(--down)}
+  .stamp{margin-top:13px; font-size:10.5px; color:var(--dimmer); text-align:center}
+
+  /* ---------- islem listesi katmani ---------- */
+  .ovl{position:fixed; inset:0; background:rgba(8,10,13,.82);
+       display:none; z-index:50; padding:20px 14px; overflow:auto}
+  .ovl[data-open="1"]{display:block}
+  .sheet{max-width:760px; margin:0 auto; background:var(--panel);
+         border:1px solid var(--line)}
+  .sheet-top{display:flex; justify-content:space-between; align-items:flex-start;
+             padding:16px; border-bottom:1px solid var(--line);
+             position:sticky; top:0; background:var(--panel)}
+  .sheet-top h2{margin:0; font-size:15px; font-weight:600}
+  .sheet-top p{margin:5px 0 0; font-size:11.5px; color:var(--dim); line-height:1.6}
+  .kapat{background:none; border:1px solid var(--line); color:var(--dim);
+         font:inherit; font-size:12px; padding:5px 11px; cursor:pointer}
+  .kapat:hover{color:var(--text); border-color:var(--dimmer)}
+  .sum{display:flex; gap:1px; background:var(--line); border-bottom:1px solid var(--line)}
+  .sum > div{flex:1; background:var(--panel); padding:12px 14px}
+  .sum .k{font-size:10px; color:var(--dimmer); margin-bottom:4px}
+  .sum .v{font-size:18px}
+  table{width:100%; border-collapse:collapse; font-size:12.5px}
+  th{position:sticky; top:0; text-align:right; font-weight:400; font-size:10px;
+     color:var(--dimmer); padding:9px 10px; background:var(--panel2);
+     border-bottom:1px solid var(--line); white-space:nowrap}
+  th:first-child, td:first-child{text-align:left}
+  td{text-align:right; padding:8px 10px; border-bottom:1px solid var(--line);
+     white-space:nowrap}
+  tbody tr:hover{background:var(--panel2)}
+
+  /* ================= MASAUSTU ================= */
+  @media (min-width:900px){
+    .wrap{max-width:1180px; padding:26px 30px 60px}
+    .top{padding-bottom:18px}
+    .sym{font-size:24px}
+    .sym small{font-size:12px}
+    .px .val{font-size:30px}
+    .px .chg{font-size:13px}
+    .top .clock{display:block; font-size:11px; color:var(--dimmer);
+                text-align:right; margin-left:36px; line-height:1.5}
+    .tabs{margin-top:0; gap:26px}
+
+    .deck{display:grid; grid-template-columns:minmax(290px,1fr) 1.3fr 1fr;
+          gap:18px; align-items:start; margin-top:22px}
+    .deck2{display:grid; grid-template-columns:2fr 1fr; gap:18px;
+           align-items:start; margin-top:18px}
+    .label{margin:0 0 8px}
+    .col > .label ~ .label{margin-top:18px}
+    .panel{padding:18px}
+
+    .gauge{max-width:none}
+    .zval{margin:-44px 0 14px}
+    .zval .n{font-size:40px}
+    .cell{padding:14px 15px}
+    .cell .v{font-size:16px}
+    .chart{height:212px}
+    .fc-main .v{font-size:21px}
+    .bs .v{font-size:22px}
+    .stamp{display:none}
+    .note{margin-top:24px; font-size:12px}
+    .ovl{padding:40px 24px}
+  }
+  @media (min-width:1400px){ .wrap{max-width:1320px} }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <header>
+  <div class="top">
     <div class="sym">ASELS<small>Aselsan Elektronik</small></div>
-    <div class="px">
-      <div class="val mono" id="price">—</div>
-      <div class="chg mono dim" id="change">veri bekleniyor</div>
-    </div>
-  </header>
-
-  <div class="label">Sapma skoru</div>
-  <div class="panel">
-    <svg class="gauge" viewBox="0 0 300 158" id="gauge" aria-hidden="true"></svg>
-    <div class="zval">
-      <div class="n mono" id="zval">—</div>
-      <div class="u" id="zdesc">hesaplanıyor</div>
-    </div>
-    <div class="zrow">
-      <div><div class="k">Bugünkü hareket</div><div class="v mono" id="mv">—</div></div>
-      <div><div class="k">20g ortalama</div><div class="v mono" id="mean">—</div></div>
-      <div><div class="k">Volatilite</div><div class="v mono" id="volp">—</div></div>
+    <div style="display:flex; align-items:baseline">
+      <div class="px">
+        <div class="val mono" id="price">—</div>
+        <div class="chg mono dim" id="change">veri bekleniyor</div>
+      </div>
+      <div class="clock" id="clock"></div>
     </div>
   </div>
 
-  <div class="label">Yarın için tarihsel karşılaştırma</div>
-  <div class="panel" id="fc"><div class="dim" style="font-size:12.5px">yükleniyor…</div></div>
-
-  <div class="label">Gün verisi</div>
-  <div class="grid">
-    <div class="cell"><div class="k">Açılış</div><div class="v mono" id="open">—</div></div>
-    <div class="cell"><div class="k">Önceki kapanış</div><div class="v mono" id="prev">—</div></div>
-    <div class="cell"><div class="k">Gün içi yüksek</div><div class="v mono" id="hi">—</div></div>
-    <div class="cell"><div class="k">Gün içi düşük</div><div class="v mono" id="lo">—</div></div>
-    <div class="cell"><div class="k">ATR (14)</div><div class="v mono" id="atr">—</div></div>
-    <div class="cell"><div class="k">Hacim</div><div class="v mono" id="vol">—</div></div>
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true"  data-page="spot">Spot</button>
+    <button role="tab" aria-selected="false" data-page="vadeli">Vadeli</button>
   </div>
 
-  <div class="label">Son 60 günün sapması</div>
-  <div class="panel">
-    <svg class="chart" viewBox="0 0 420 130" preserveAspectRatio="none" id="hist"></svg>
-    <div class="legend">
-      <span><i style="background:var(--steel)"></i>z-skoru</span>
-      <span><i style="background:var(--watch)"></i>±2σ eşiği</span>
+  <!-- ===================== SPOT ===================== -->
+  <div id="page-spot">
+    <div class="deck">
+      <div class="col">
+        <div class="label">Sapma skoru</div>
+        <div class="panel">
+          <svg class="gauge" viewBox="0 0 300 158" id="gauge" aria-hidden="true"></svg>
+          <div class="zval">
+            <div class="n mono" id="zval">—</div>
+            <div class="u" id="zdesc">hesaplanıyor</div>
+          </div>
+          <div class="zrow">
+            <div><div class="k">Bugünkü hareket</div><div class="v mono" id="mv">—</div></div>
+            <div><div class="k">20g ortalama</div><div class="v mono" id="mean">—</div></div>
+            <div><div class="k">Volatilite</div><div class="v mono" id="volp">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="label">Yarın için tarihsel karşılaştırma</div>
+        <div class="panel" id="fc"><div class="dim" style="font-size:12.5px">yükleniyor…</div></div>
+      </div>
+
+      <div class="col">
+        <div class="label">Gün verisi</div>
+        <div class="grid">
+          <div class="cell"><div class="k">Açılış</div><div class="v mono" id="open">—</div></div>
+          <div class="cell"><div class="k">Önceki kapanış</div><div class="v mono" id="prev">—</div></div>
+          <div class="cell"><div class="k">Gün içi yüksek</div><div class="v mono" id="hi">—</div></div>
+          <div class="cell"><div class="k">Gün içi düşük</div><div class="v mono" id="lo">—</div></div>
+          <div class="cell"><div class="k">ATR (14)</div><div class="v mono" id="atr">—</div></div>
+          <div class="cell"><div class="k">Hacim</div><div class="v mono" id="vol">—</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="label">Son 60 günün sapması</div>
+    <div class="panel">
+      <svg class="chart" viewBox="0 0 420 130" preserveAspectRatio="none" id="hist"></svg>
+      <div class="legend">
+        <span><i style="background:var(--steel)"></i>z-skoru</span>
+        <span><i style="background:var(--watch)"></i>±2σ eşiği</span>
+      </div>
     </div>
   </div>
 
-  <div class="label">VİOP kontratları</div>
-  <div class="panel" id="viop"><div class="dim" style="font-size:12.5px">yükleniyor…</div></div>
+  <!-- ===================== VADELİ ===================== -->
+  <div id="page-vadeli" hidden>
+    <div class="deck2">
+      <div class="col">
+        <div class="label">Primin seyri</div>
+        <div class="panel">
+          <svg class="chart" viewBox="0 0 420 130" preserveAspectRatio="none" id="bhist"></svg>
+          <div class="legend">
+            <span><i style="background:var(--steel)"></i>vadeli primi %</span>
+          </div>
+        </div>
+
+        <div class="label">Vadeli tarafta neden sapma skoru yok</div>
+        <div class="panel">
+          <div style="font-size:12.5px; color:var(--dim); line-height:1.75">
+            Spot tarafta 2019'a kadar giden günlük veri var, z-skoru ve ertesi gün
+            analizi onun üzerine kuruldu. Vadeli kontratlarda böyle bir geçmiş yok:
+            kaynak yalnızca o anki durumu veriyor, geriye dönük sorgulanamıyor.
+            Elimizdeki vadeli seri, toplayıcının çalışmaya başladığı günden itibaren
+            birikiyor.<br><br>
+            Bu yüzden burada tahmin bölümü yok. Olmayan geçmişten üretilmiş bir
+            skor koymak, spot taraftaki sayılarla aynı görünüp aynı anlamı
+            taşımayacağı için yanıltıcı olurdu. Prim dağılımı ölçülebilir hale
+            geldiğinde (yaklaşık 15 işlem günü) sapma skoru buraya da gelir.
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="label">Vadeli primi</div>
+        <div class="panel" id="basis"><div class="dim" style="font-size:12.5px">yükleniyor…</div></div>
+
+        <div class="label">VİOP kontratları</div>
+        <div class="panel" id="viop"><div class="dim" style="font-size:12.5px">yükleniyor…</div></div>
+      </div>
+    </div>
+  </div>
 
   <div class="note" id="note">
-    <b>Bu panelde ne var, ne yok.</b> Sapma skoru, gün verisi ve geçmiş grafiği
-    gerçek veriden hesaplanıyor. VİOP bölümü İş Yatırım kaynaklı, yaklaşık 15
-    dakika gecikmeli ve yalnızca o anki durumu gösteriyor — geriye dönük geçmişi
-    toplayıcı çalıştıkça birikiyor. Kurum akışı, varant akışı, alarm kuralları ve
-    sinyal başarı takibi <b>henüz bağlı değil</b>; o bölümler kasıtlı olarak
-    eklenmedi, çünkü olmayan veriyi dolu göstermek en kötü seçenek olurdu.
-    Eşikler (±2σ, 20 gün, ATR 14) sektör varsayılanı, ASELSAN'a optimize edilmedi.
+    <b>Bu panelde ne var, ne yok.</b> Sapma skoru, gün verisi, geçmiş grafiği ve
+    tarihsel karşılaştırma gerçek veriden hesaplanıyor. Vadeli sekmesindeki prim
+    ve kontrat verisi İş Yatırım kaynaklı, yaklaşık 15 dakika gecikmeli ve geriye
+    dönük geçmişi yok. Kurum akışı, varant akışı, alarm kuralları ve sinyal
+    başarı takibi <b>henüz bağlı değil</b> — olmayan veriyi dolu göstermemek için
+    o bölümler eklenmedi. Eşikler (±2σ, 20 gün, ATR 14) sektör varsayılanı,
+    ASELSAN'a optimize edilmedi.
   </div>
 
   <div class="stamp" id="stamp"></div>
 </div>
 
+<!-- ===================== İŞLEM LİSTESİ ===================== -->
+<div class="ovl" id="ovl" data-open="0" role="dialog" aria-modal="true" aria-labelledby="ovl-h">
+  <div class="sheet">
+    <div class="sheet-top">
+      <div>
+        <h2 id="ovl-h">—</h2>
+        <p id="ovl-p"></p>
+      </div>
+      <button class="kapat" id="ovl-x">Kapat</button>
+    </div>
+    <div class="sum" id="ovl-sum"></div>
+    <div id="ovl-body"></div>
+  </div>
+</div>
+
 <script>
-// ------------------------------------------------------------------
-// Worker adresini buraya yaz (wrangler deploy ciktisindaki adres)
-const API = ""; // panel Worker ile ayni adreste, gorece yol yeterli
+const API = "";
 const SYMBOL = "ASELS";
-// ------------------------------------------------------------------
 
 const $ = id => document.getElementById(id);
 const nf = (v, d = 2) =>
   v === null || v === undefined || isNaN(v)
     ? "—"
     : Number(v).toLocaleString("tr-TR", { minimumFractionDigits: d, maximumFractionDigits: d });
+const sgn = v => (v > 0 ? "+" : "");
+const cls = v => (v > 0 ? "up" : v < 0 ? "down" : "dim");
+const gun = s => (s ? new Date(s).toLocaleDateString("tr-TR") : "—");
 
+let SON = null;   // son snapshot
+
+/* ---------------- sekmeler ---------------- */
+function setPage(p) {
+  $("page-spot").hidden = p !== "spot";
+  $("page-vadeli").hidden = p !== "vadeli";
+  document.querySelectorAll(".tabs button").forEach(b =>
+    b.setAttribute("aria-selected", String(b.dataset.page === p)));
+  if (location.hash.slice(1) !== p) history.replaceState(null, "", "#" + p);
+  if (p === "vadeli") loadBasisHistory();
+}
+document.querySelectorAll(".tabs button").forEach(b =>
+  b.addEventListener("click", () => setPage(b.dataset.page)));
+
+/* ---------------- sapma gostergesi ---------------- */
 function zClass(z) {
   if (z === null || z === undefined) return "dim";
   if (Math.abs(z) >= 2) return z > 0 ? "up" : "down";
@@ -182,84 +341,264 @@ function zText(z) {
   return "normal aralıkta";
 }
 
-/* yarim daire gauge: -3σ .. +3σ */
 function drawGauge(z) {
   const cx = 150, cy = 140, r = 108;
-  const pt = (frac) => {
-    const a = Math.PI * (1 - frac);
-    return [cx + r * Math.cos(a), cy - r * Math.sin(a)];
-  };
+  const pt = f => [cx + r * Math.cos(Math.PI * (1 - f)), cy - r * Math.sin(Math.PI * (1 - f))];
   let s = `<path d="M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}"
            fill="none" stroke="var(--line)" stroke-width="9"/>`;
-
-  // -2σ ve +2σ esik isaretleri
   [-2, 2].forEach(t => {
     const f = (t + 3) / 6, [x, y] = pt(f);
-    const [ix, iy] = [cx + (r - 13) * Math.cos(Math.PI * (1 - f)),
-                      cy - (r - 13) * Math.sin(Math.PI * (1 - f))];
-    s += `<line x1="${ix}" y1="${iy}" x2="${x}" y2="${y}"
-           stroke="var(--watch)" stroke-width="2"/>`;
+    const ix = cx + (r - 13) * Math.cos(Math.PI * (1 - f));
+    const iy = cy - (r - 13) * Math.sin(Math.PI * (1 - f));
+    s += `<line x1="${ix}" y1="${iy}" x2="${x}" y2="${y}" stroke="var(--watch)" stroke-width="2"/>`;
   });
-
   if (z !== null && z !== undefined) {
-    const c = Math.max(-3, Math.min(3, z));
-    const f = (c + 3) / 6;
-    const [x, y] = pt(f);
+    const f = (Math.max(-3, Math.min(3, z)) + 3) / 6;
+    const [x, y] = pt(f), [sx, sy] = pt(0.5);
     const col = { up: "--up", down: "--down", watch: "--watch", steel: "--steel" }[zClass(z)];
-    const large = f > 0.5 ? 0 : 0;
-    const [sx, sy] = pt(0.5);
-    // merkezden (0σ) mevcut degere yay
-    s += `<path d="M ${sx} ${sy} A ${r} ${r} 0 ${large} ${f > 0.5 ? 1 : 0} ${x} ${y}"
-           fill="none" stroke="var(${col})" stroke-width="9" stroke-linecap="butt"/>`;
-    s += `<circle cx="${x}" cy="${y}" r="6" fill="var(${col})"/>`;
+    s += `<path d="M ${sx} ${sy} A ${r} ${r} 0 0 ${f > 0.5 ? 1 : 0} ${x} ${y}"
+           fill="none" stroke="var(${col})" stroke-width="9"/>
+          <circle cx="${x}" cy="${y}" r="6" fill="var(${col})"/>`;
   }
-  s += `<text x="${cx - r}" y="156" fill="var(--dimmer)" font-size="10"
-         font-family="IBM Plex Mono" text-anchor="middle">-3σ</text>
-        <text x="${cx}" y="156" fill="var(--dimmer)" font-size="10"
-         font-family="IBM Plex Mono" text-anchor="middle">0</text>
-        <text x="${cx + r}" y="156" fill="var(--dimmer)" font-size="10"
-         font-family="IBM Plex Mono" text-anchor="middle">+3σ</text>`;
+  ["-3σ", "0", "+3σ"].forEach((t, i) => {
+    s += `<text x="${[cx - r, cx, cx + r][i]}" y="156" fill="var(--dimmer)" font-size="10"
+           font-family="IBM Plex Mono" text-anchor="middle">${t}</text>`;
+  });
   $("gauge").innerHTML = s;
 }
 
-function drawHistory(rows) {
-  const pts = rows.filter(r => r.z_score !== null);
-  if (!pts.length) { $("hist").innerHTML = ""; return; }
+/* ---------------- cizgi grafikler ---------------- */
+function lineChart(el, vals, opts = {}) {
+  const pts = vals.filter(v => v !== null && v !== undefined && !isNaN(v));
+  if (pts.length < 2) {
+    $(el).innerHTML = `<text x="210" y="68" fill="var(--dimmer)" font-size="11"
+      font-family="IBM Plex Sans" text-anchor="middle">${opts.bos || "veri yok"}</text>`;
+    return;
+  }
   const W = 420, H = 130, pad = 6;
-  const lim = Math.max(3, ...pts.map(p => Math.abs(p.z_score)));
-  const x = i => pad + (i * (W - 2 * pad)) / Math.max(1, pts.length - 1);
-  const y = v => H / 2 - (v / lim) * (H / 2 - pad);
+  const lo = opts.simetrik ? -Math.max(3, ...pts.map(Math.abs)) : Math.min(...pts);
+  const hi = opts.simetrik ?  Math.max(3, ...pts.map(Math.abs)) : Math.max(...pts);
+  const span = (hi - lo) || 1;
+  const x = i => pad + (i * (W - 2 * pad)) / (pts.length - 1);
+  const y = v => H - pad - ((v - lo) / span) * (H - 2 * pad);
 
-  let s = `<line x1="0" y1="${y(0)}" x2="${W}" y2="${y(0)}"
-           stroke="var(--line)" stroke-width="1"/>`;
-  [2, -2].forEach(t => {
-    s += `<line x1="0" y1="${y(t)}" x2="${W}" y2="${y(t)}" stroke="var(--watch)"
-           stroke-width="1" stroke-dasharray="3 4" opacity=".55"/>`;
+  let s = "";
+  (opts.cizgiler || []).forEach(t => {
+    if (t >= lo && t <= hi)
+      s += `<line x1="0" y1="${y(t)}" x2="${W}" y2="${y(t)}" stroke="var(--watch)"
+             stroke-dasharray="3 4" opacity=".55"/>`;
   });
+  if (opts.simetrik)
+    s += `<line x1="0" y1="${y(0)}" x2="${W}" y2="${y(0)}" stroke="var(--line)"/>`;
   s += `<polyline fill="none" stroke="var(--steel)" stroke-width="1.6"
-         points="${pts.map((p, i) => `${x(i)},${y(p.z_score)}`).join(" ")}"/>`;
-  pts.forEach((p, i) => {
-    if (Math.abs(p.z_score) >= 2)
-      s += `<circle cx="${x(i)}" cy="${y(p.z_score)}" r="2.8"
-             fill="${p.z_score > 0 ? "var(--up)" : "var(--down)"}"/>`;
-  });
-  $("hist").innerHTML = s;
+         vector-effect="non-scaling-stroke"
+         points="${pts.map((v, i) => `${x(i)},${y(v)}`).join(" ")}"/>`;
+  if (opts.isaret)
+    pts.forEach((v, i) => {
+      if (Math.abs(v) >= opts.isaret)
+        s += `<circle cx="${x(i)}" cy="${y(v)}" r="2.8"
+               fill="${v > 0 ? "var(--up)" : "var(--down)"}"/>`;
+    });
+  $(el).innerHTML = s;
 }
 
+/* ---------------- tahmin karti ---------------- */
+function isabetHesap(f, base) {
+  // Sinyal yonu = kovanin tarihsel medyan yonu.
+  // Isabet = ertesi gun acilistan kapanisa o yonde kapanmis mi.
+  const yon = f.icgun_medyan >= 0 ? 1 : -1;
+  const isabet = yon > 0 ? f.icgun_yukari_pct : 100 - f.icgun_yukari_pct;
+  const taban = base == null ? null
+    : (yon > 0 ? base.icgun_yukari_pct : 100 - base.icgun_yukari_pct);
+  return { yon, isabet, taban, fark: taban === null ? null : isabet - taban };
+}
+
+function renderForecast(f, base) {
+  const el = $("fc");
+  el.classList.remove("klik");
+  if (!f) {
+    el.innerHTML = `<div class="dim" style="font-size:12.5px">
+      Tarihsel karşılaştırma için <span class="mono">0003_forecast.sql</span>
+      ve <span class="mono">0005_cases.sql</span> çalıştırılmalı.</div>`;
+    return;
+  }
+  const w = isabetHesap(f, base);
+  const zayif = f.ornek_sayisi < 30 || (w.fark !== null && Math.abs(w.fark) < 3);
+  const sc = v => Math.max(0, Math.min(100, ((v + 4) / 8) * 100));
+  const a = sc(f.icgun_p25), b = sc(f.icgun_p75), mid = sc(f.icgun_medyan);
+
+  el.innerHTML = `
+    <div class="fc-head">
+      <div class="kova">Benzer günler: <span class="mono">${f.kova}</span></div>
+      <div class="n mono">${f.ornek_sayisi} gözlem</div>
+    </div>
+    <div class="fc-main">
+      <div>
+        <div class="k">Yön ve isabet</div>
+        <div class="v mono ${zayif ? "dim" : w.yon > 0 ? "up" : "down"}">
+          ${w.yon > 0 ? "▲" : "▼"} ${nf(w.isabet, 0)}%</div>
+        <div class="s mono">taban ${w.taban === null ? "—" : nf(w.taban, 0) + "%"}${
+          w.fark === null ? "" : ` · fark ${sgn(w.fark)}${nf(w.fark, 1)}`}</div>
+      </div>
+      <div>
+        <div class="k">Açılış (medyan boşluk)</div>
+        <div class="v mono ${cls(f.gap_medyan)}">${nf(f.acilis_medyan_tahmin)}</div>
+        <div class="s mono">${sgn(f.gap_medyan)}${nf(f.gap_medyan)}%</div>
+      </div>
+    </div>
+    <div class="bar">
+      <span style="left:${a}%; width:${Math.max(1, b - a)}%"></span>
+      <i style="left:${mid}%"></i>
+      <i style="left:50%; background:var(--line)"></i>
+    </div>
+    <div class="scale mono">
+      <span>-4%</span>
+      <span>medyan ${nf(f.icgun_medyan)}% · orta yarı ${nf(f.icgun_p25)}…${nf(f.icgun_p75)}%</span>
+      <span>+4%</span>
+    </div>
+    <div class="fc-foot">
+      ${zayif
+        ? `Kanıt zayıf: ${f.ornek_sayisi} gözlem, tabandan fark
+           ${w.fark === null ? "ölçülemedi" : nf(Math.abs(w.fark), 1) + " puan"}.
+           Tek başına işlem kurmaya yetmez.`
+        : `İsabet tabandan ${nf(Math.abs(w.fark), 1)} puan
+           ${w.fark > 0 ? "yüksek" : "düşük"} — ${f.ornek_sayisi} gözlemlik bulgu.`}
+      ${f.kova_no === undefined ? "" :
+        `<br><span class="ac">Tıkla: bu kovaya düşmüş bütün günleri gör →</span>`}
+    </div>`;
+
+  if (f.kova_no !== undefined) {
+    el.classList.add("klik");
+    el.onclick = () => acListe(f, base);
+  }
+}
+
+/* ---------------- islem listesi ---------------- */
+async function acListe(f, base) {
+  const w = isabetHesap(f, base);
+  $("ovl-h").textContent = `${f.kova} kovasındaki bütün günler`;
+  $("ovl-p").textContent =
+    `Sinyal yönü, kovanın tarihsel medyanından geliyor: ${w.yon > 0 ? "yukarı" : "aşağı"}. ` +
+    `İsabet, ertesi gün açılıştan kapanışa o yönde kapanmış olması demek. ` +
+    `İşlem maliyeti, spread ve kayma hesaba katılmıyor.`;
+  $("ovl-sum").innerHTML = `<div class="dim" style="padding:12px 14px">yükleniyor…</div>`;
+  $("ovl-body").innerHTML = "";
+  $("ovl").dataset.open = "1";
+
+  let r;
+  try {
+    r = await fetch(`${API}/api/cases?symbol=${SYMBOL}&kova=${f.kova_no}`).then(x => x.json());
+    if (r.error) throw new Error(r.error);
+  } catch (e) {
+    $("ovl-sum").innerHTML =
+      `<div class="down" style="padding:12px 14px">Liste alınamadı: ${e.message}</div>`;
+    return;
+  }
+
+  const rows = r.rows || [];
+  const isabetli = rows.filter(x => x.intraday_pct * w.yon > 0).length;
+  const oran = rows.length ? (100 * isabetli) / rows.length : 0;
+  const ortKazanc = rows.length
+    ? rows.reduce((s, x) => s + x.intraday_pct * w.yon, 0) / rows.length : 0;
+
+  $("ovl-sum").innerHTML = `
+    <div><div class="k">Gün sayısı</div><div class="v mono">${rows.length}</div></div>
+    <div><div class="k">İsabet</div>
+         <div class="v mono ${oran > 55 ? "up" : oran < 45 ? "down" : "watch"}">
+           ${nf(oran, 1)}%</div></div>
+    <div><div class="k">İsabetli / ıskalı</div>
+         <div class="v mono">${isabetli} / ${rows.length - isabetli}</div></div>
+    <div><div class="k">Ortalama sonuç</div>
+         <div class="v mono ${cls(ortKazanc)}">${sgn(ortKazanc)}${nf(ortKazanc)}%</div></div>`;
+
+  $("ovl-body").innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Sinyal günü</th><th>z</th><th>Kapanış</th>
+        <th>Ertesi gün</th><th>Boşluk</th><th>Gün içi</th><th>Aralık</th><th>Sonuç</th>
+      </tr></thead>
+      <tbody>${rows.map(x => {
+        const ok = x.intraday_pct * w.yon > 0;
+        return `<tr>
+          <td class="mono">${gun(x.gun)}</td>
+          <td class="mono ${zClass(x.z_score)}">${sgn(x.z_score)}${nf(x.z_score)}</td>
+          <td class="mono dim">${nf(x.kapanis)}</td>
+          <td class="mono dim">${gun(x.ertesi_gun)}</td>
+          <td class="mono ${cls(x.gap_pct)}">${sgn(x.gap_pct)}${nf(x.gap_pct)}%</td>
+          <td class="mono ${cls(x.intraday_pct)}">${sgn(x.intraday_pct)}${nf(x.intraday_pct)}%</td>
+          <td class="mono dim">${nf(x.range_pct)}%</td>
+          <td class="mono ${ok ? "up" : "down"}">${ok ? "✓" : "✗"}</td>
+        </tr>`;
+      }).join("")}</tbody>
+    </table>`;
+}
+
+function kapat() { $("ovl").dataset.open = "0"; }
+$("ovl-x").addEventListener("click", kapat);
+$("ovl").addEventListener("click", e => { if (e.target === $("ovl")) kapat(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") kapat(); });
+
+/* ---------------- vadeli ---------------- */
+function renderBasis(b) {
+  const el = $("basis");
+  if (!b) {
+    el.innerHTML = `<div class="dim" style="font-size:12.5px">
+      Vadeli primi için <span class="mono">0004_viop_basis.sql</span>
+      henüz çalıştırılmamış.</div>`;
+    return;
+  }
+  const zp = b.z_prim;
+  el.innerHTML = `
+    <div class="fc-head">
+      <div class="kova mono">${b.code}</div>
+      <div class="n mono">${b.kalan_gun} gün kaldı</div>
+    </div>
+    <div class="bs" style="padding-top:13px">
+      <div>
+        <div class="k">Prim</div>
+        <div class="v mono ${cls(b.prim_pct)}">${sgn(b.prim_pct)}${nf(b.prim_pct)}%</div>
+        <div class="s mono">${nf(b.vadeli)} / ${nf(b.spot)}</div>
+      </div>
+      <div>
+        <div class="k">Yıllık karşılığı</div>
+        <div class="v mono dim">${nf(b.yillik_pct, 1)}%</div>
+        <div class="s mono">baz ${sgn(b.baz_tl)}${nf(b.baz_tl)} TL</div>
+      </div>
+    </div>
+    <div class="fc-foot">
+      ${zp === null || zp === undefined
+        ? `Primin normalini ölçmek için en az 15 gün gerekiyor;
+           şu an ${b.gun_sayisi ?? 0} gün var.`
+        : `Prim, ortalamasından
+           <span class="mono ${zClass(zp)}">${sgn(zp)}${nf(zp)}σ</span> uzakta
+           (ortalama ${nf(b.prim_ort)}%, ${b.gun_sayisi} gün).`}
+    </div>`;
+}
+
+async function loadBasisHistory() {
+  try {
+    const r = await fetch(`${API}/api/basis-history?symbol=${SYMBOL}&days=90`).then(x => x.json());
+    lineChart("bhist", (r.rows || []).map(x => x.prim_kapanis),
+              { bos: "prim serisi henüz birikmedi" });
+  } catch {
+    lineChart("bhist", [], { bos: "prim serisi alınamadı" });
+  }
+}
+
+/* ---------------- ana cizim ---------------- */
 function render(d) {
   const m = d.metrics, q = d.quote;
-  const last = q?.last ?? m?.close;
-  $("price").textContent = nf(last);
+  $("price").textContent = nf(q?.last ?? m?.close);
 
   const chg = q?.change_percent ?? m?.ret_pct;
   if (chg !== null && chg !== undefined) {
-    $("change").textContent = (chg > 0 ? "+" : "") + nf(chg) + "%";
-    $("change").className = "chg mono " + (chg > 0 ? "up" : chg < 0 ? "down" : "dim");
+    $("change").textContent = sgn(chg) + nf(chg) + "%";
+    $("change").className = "chg mono " + cls(chg);
   }
 
   const z = m?.z_score ?? null;
   drawGauge(z);
-  $("zval").textContent = z === null ? "—" : (z > 0 ? "+" : "") + nf(z);
+  $("zval").textContent = z === null ? "—" : sgn(z) + nf(z);
   $("zval").className = "n mono " + zClass(z);
   $("zdesc").textContent = zText(z);
 
@@ -275,93 +614,27 @@ function render(d) {
   const v = q?.volume ?? m?.volume;
   $("vol").textContent = v ? (v / 1e6).toFixed(1) + "M" : "—";
 
-  renderForecast(d.forecast, d.baseline, d.metrics);
+  renderForecast(d.forecast, d.baseline);
+  renderBasis(d.basis);
 
   const vp = $("viop");
-  if (!d.viop.length) {
-    vp.innerHTML = `<div class="dim" style="font-size:12.5px">Henüz VİOP verisi
-      toplanmadı. Toplayıcı borsa açıkken çalıştığında burası dolacak.</div>`;
-  } else {
-    vp.innerHTML = d.viop.map(c => `
+  vp.innerHTML = !d.viop.length
+    ? `<div class="dim" style="font-size:12.5px">Henüz VİOP verisi toplanmadı.
+       Toplayıcı borsa açıkken çalıştığında burası dolacak.</div>`
+    : d.viop.map(c => `
       <div class="row">
-        <div><div class="mono">${c.code}</div>
-             <div class="c" style="font-size:11px">${c.contract ?? ""}</div></div>
+        <div><div class="mono">${c.code}</div><div class="c">${c.contract ?? ""}</div></div>
         <div style="text-align:right">
           <div class="mono">${nf(c.price)}</div>
-          <div class="mono ${c.change > 0 ? "up" : c.change < 0 ? "down" : "dim"}"
-               style="font-size:11px">${c.change > 0 ? "+" : ""}${nf(c.change)}</div>
+          <div class="mono ${cls(c.change)}" style="font-size:11px">
+            ${sgn(c.change)}${nf(c.change)}</div>
         </div>
       </div>`).join("");
-  }
 
-  $("stamp").textContent =
-    "son güncelleme " + new Date(d.served_at).toLocaleString("tr-TR") +
-    " · veri ~15 dk gecikmeli";
-}
-
-function renderForecast(f, base, m) {
-  const el = $("fc");
-
-  if (!f) {
-    el.innerHTML = `<div class="dim" style="font-size:12.5px">
-      Tarihsel karşılaştırma için <span class="mono">0003_forecast.sql</span>
-      henüz çalıştırılmamış.</div>`;
-    return;
-  }
-
-  const up = f.icgun_yukari_pct;
-  const tab = base?.icgun_yukari_pct ?? null;
-  const fark = tab === null ? null : up - tab;
-  const zayif = f.ornek_sayisi < 30 || (fark !== null && Math.abs(fark) < 3);
-
-  // gün içi dağılımın p25–p75 aralığını -4..+4 ölçeğine oturt
-  const scale = v => Math.max(0, Math.min(100, ((v + 4) / 8) * 100));
-  const a = scale(f.icgun_p25), b = scale(f.icgun_p75), mid = scale(f.icgun_medyan);
-
-  el.innerHTML = `
-    <div class="fc-head">
-      <div class="kova">Benzer günler: <span class="mono">${f.kova}</span></div>
-      <div class="n mono">${f.ornek_sayisi} gözlem</div>
-    </div>
-
-    <div class="fc-main">
-      <div>
-        <div class="k">Açılış (medyan boşluk)</div>
-        <div class="v mono ${f.gap_medyan > 0 ? "up" : f.gap_medyan < 0 ? "down" : "dim"}">
-          ${nf(f.acilis_medyan_tahmin)}</div>
-        <div class="s mono">${f.gap_medyan > 0 ? "+" : ""}${nf(f.gap_medyan)}%</div>
-      </div>
-      <div>
-        <div class="k">Gün içi yukarı kapanma</div>
-        <div class="v mono ${zayif ? "dim" : up > 55 ? "up" : up < 45 ? "down" : "watch"}">
-          ${nf(up, 0)}%</div>
-        <div class="s mono">taban ${tab === null ? "—" : nf(tab, 0) + "%"}${
-          fark === null ? "" : ` · fark ${fark > 0 ? "+" : ""}${nf(fark, 1)}`}</div>
-      </div>
-    </div>
-
-    <div class="bar">
-      <span style="left:${a}%; width:${Math.max(1, b - a)}%"></span>
-      <i style="left:${mid}%"></i>
-      <i style="left:50%; background:var(--line)"></i>
-    </div>
-    <div class="s mono" style="font-size:10px; color:var(--dimmer);
-         display:flex; justify-content:space-between">
-      <span>-4%</span>
-      <span>gün içi: medyan ${nf(f.icgun_medyan)}% · orta yarı
-        ${nf(f.icgun_p25)}…${nf(f.icgun_p75)}%</span>
-      <span>+4%</span>
-    </div>
-
-    <div class="fc-foot">
-      ${zayif
-        ? `Bu kovada kanıt zayıf: ${f.ornek_sayisi} gözlem ve tabandan fark
-           ${fark === null ? "ölçülemedi" : nf(Math.abs(fark), 1) + " puan"}.
-           Tek başına işlem kurmaya yetmez.`
-        : `Bu kovada yukarı kapanma oranı tabandan ${nf(Math.abs(fark), 1)} puan
-           ${fark > 0 ? "yüksek" : "düşük"}. Yine de ${f.ornek_sayisi} gözlemlik
-           bir bulgu — dönem ayrımında da tutup tutmadığına bak.`}
-    </div>`;
+  const t = "son güncelleme " + new Date(d.served_at).toLocaleString("tr-TR") +
+            " · veri ~15 dk gecikmeli";
+  $("stamp").textContent = t;
+  $("clock").innerHTML = t.replace(" · ", "<br>");
 }
 
 async function load() {
@@ -371,16 +644,18 @@ async function load() {
       fetch(`${API}/api/history?symbol=${SYMBOL}&days=60`).then(r => r.json()),
     ]);
     if (snap.error) throw new Error(snap.error);
+    SON = snap;
     render(snap);
-    drawHistory(hist.rows || []);
+    lineChart("hist", (hist.rows || []).map(r => r.z_score),
+              { simetrik: true, cizgiler: [2, -2], isaret: 2, bos: "geçmiş yok" });
   } catch (e) {
     const n = $("note");
     n.classList.add("err");
-    n.innerHTML = `<b>Veri alınamadı.</b> ${e.message}<br>
-      Worker adresi doğru mu, API sabitini kontrol et.`;
+    n.innerHTML = `<b>Veri alınamadı.</b> ${e.message}`;
   }
 }
 
+setPage(location.hash.slice(1) === "vadeli" ? "vadeli" : "spot");
 load();
 setInterval(load, 60000);
 </script>

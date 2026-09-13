@@ -79,7 +79,7 @@ async function snapshot(env, symbol) {
   // diye bu ikisinin hatasini yutuyoruz.
   const soft = (p) => sb(env, p).catch(() => null);
 
-  const [metrics, quote, viop, forecast, baseline] = await Promise.all([
+  const [metrics, quote, viop, forecast, baseline, basis] = await Promise.all([
     sb(env, `latest_metrics?symbol=eq.${symbol}`),
     sb(env, `latest_quote?symbol=eq.${symbol}`),
     // NOT: kaynaktaki sutun isimleri kaymis gorunuyor — volume_tl alani
@@ -88,6 +88,7 @@ async function snapshot(env, symbol) {
     sb(env, `latest_viop?underlying=eq.${symbol}&order=volume_qty.desc&limit=6`),
     soft(`forecast_today?symbol=eq.${symbol}`),
     soft(`zbucket_stats?sira=eq.0`),
+    soft(`latest_basis?underlying=eq.${symbol}`),
   ]);
   return {
     symbol,
@@ -96,8 +97,34 @@ async function snapshot(env, symbol) {
     viop: viop || [],
     forecast: forecast?.[0] || null,
     baseline: baseline?.[0] || null,
+    basis: basis?.[0] || null,
     served_at: new Date().toISOString(),
   };
+}
+
+/** Bir z kovasina dusmus butun gunler + ertesi gun sonuclari. */
+async function cases(env, symbol, bucketNo) {
+  const b = parseInt(bucketNo, 10);
+  if (!(b >= 0 && b <= 5)) throw new Error("gecersiz kova");
+  const rows = await sb(
+    env,
+    `zbucket_cases?symbol=eq.${symbol}&kova_no=eq.${b}` +
+      `&select=gun,ertesi_gun,z_score,kapanis,gap_pct,intraday_pct,cc_pct,range_pct` +
+      `&order=gun.desc&limit=600`
+  );
+  return { symbol, kova_no: b, n: rows.length, rows };
+}
+
+/** Vadeli primin gunluk seyri. */
+async function basisHistory(env, symbol, days) {
+  const n = Math.min(Math.max(parseInt(days, 10) || 90, 5), 400);
+  const rows = await sb(
+    env,
+    `viop_basis_daily?underlying=eq.${symbol}` +
+      `&select=date,prim_kapanis,prim_min,prim_max,yillik_ort,spot_ort,kontrat,olcum` +
+      `&order=date.desc&limit=${n}`
+  );
+  return { symbol, rows: rows.reverse() };
 }
 
 async function history(env, symbol, days) {
@@ -131,6 +158,18 @@ export default {
 
         case "/api/snapshot":
           return json(await snapshot(env, symbol), env);
+
+        case "/api/cases":
+          return json(
+            await cases(env, symbol, url.searchParams.get("kova")),
+            env, 200, 300
+          );
+
+        case "/api/basis-history":
+          return json(
+            await basisHistory(env, symbol, url.searchParams.get("days")),
+            env, 200, 120
+          );
 
         case "/api/history":
           return json(
