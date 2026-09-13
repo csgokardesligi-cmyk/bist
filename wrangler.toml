@@ -1,6 +1,19 @@
+# Repo KOKUNE konacak — Cloudflare bu dosyayi burada ariyor.
 name = "bist"
 main = "worker/src/index.js"
 compatibility_date = "2026-09-01"
 
+# Panel dosyalari. /api/* Worker'a gider, geri kalan her sey
+# web/ klasorunden statik olarak servis edilir.
+# Sonuc: https://bist.pbmsolutions.workers.dev  -> panel
+#        https://bist.pbmsolutions.workers.dev/api/snapshot -> veri
+[assets]
+directory = "web"
+
 [vars]
-ALLOWED_ORIGIN = "*"
+# Panel artik Worker ile ayni adreste oldugu icin CORS'a gerek kalmadi.
+ALLOWED_ORIGIN = "https://bist.pbmsolutions.workers.dev"
+
+# Secret'lar buraya YAZILMAZ, Cloudflare panelinden girilir:
+#   SUPABASE_URL
+#   SUPABASE_SERVICE_KEY
