@@ -74,19 +74,28 @@ function cleanSymbol(raw) {
 }
 
 async function snapshot(env, symbol) {
-  const [metrics, quote, viop] = await Promise.all([
+  // forecast_today ve zbucket_stats 0003_forecast.sql ile geliyor.
+  // Henuz calistirilmadiysa 404 doner — panelin geri kalani calissin
+  // diye bu ikisinin hatasini yutuyoruz.
+  const soft = (p) => sb(env, p).catch(() => null);
+
+  const [metrics, quote, viop, forecast, baseline] = await Promise.all([
     sb(env, `latest_metrics?symbol=eq.${symbol}`),
     sb(env, `latest_quote?symbol=eq.${symbol}`),
     // NOT: kaynaktaki sutun isimleri kaymis gorunuyor — volume_tl alani
     // yuzde degisim tasiyor (negatif degerler var), gercek hacim volume_qty'de.
     // Ham veri kaynaktaki isimle saklaniyor, siralamayi burada duzeltiyoruz.
     sb(env, `latest_viop?underlying=eq.${symbol}&order=volume_qty.desc&limit=6`),
+    soft(`forecast_today?symbol=eq.${symbol}`),
+    soft(`zbucket_stats?sira=eq.0`),
   ]);
   return {
     symbol,
     metrics: metrics[0] || null,
     quote: quote[0] || null,
     viop: viop || [],
+    forecast: forecast?.[0] || null,
+    baseline: baseline?.[0] || null,
     served_at: new Date().toISOString(),
   };
 }
