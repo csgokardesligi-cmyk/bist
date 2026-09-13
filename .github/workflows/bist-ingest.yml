@@ -1,0 +1,59 @@
+# .github/workflows/bist-ingest.yml
+name: bist-ingest
+
+on:
+  schedule:
+    # UTC. BIST seansi 10:00-18:15 TRT = 07:00-15:15 UTC (Turkiye'de DST yok).
+    # Saat basi en yogun dilim oldugu icin dakikalar kaydirildi.
+    - cron: "2,17,32,47 7-15 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "poll veya backfill"
+        type: choice
+        options: [poll, backfill]
+        default: poll
+      daily_period:
+        description: "backfill icin gunluk periyot"
+        default: "5y"
+      intraday_period:
+        description: "backfill icin gun-ici periyot"
+        default: "3mo"
+
+# Ust uste binen calismalar ayni satirlari yazmasin
+concurrency:
+  group: bist-ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Run
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          TV_SESSION: ${{ secrets.TV_SESSION }}
+          TV_SESSION_SIGN: ${{ secrets.TV_SESSION_SIGN }}
+          SYMBOL: ASELS
+          INTRADAY: 15m
+          BAR_TZ: Europe/Istanbul
+        run: |
+          if [ "${{ inputs.mode }}" = "backfill" ]; then
+            python ingest.py backfill \
+              --daily-period "${{ inputs.daily_period }}" \
+              --intraday-period "${{ inputs.intraday_period }}"
+          else
+            python ingest.py poll
+          fi
