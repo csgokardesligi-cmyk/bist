@@ -67,6 +67,23 @@
   .up{color:var(--up)} .down{color:var(--down)} .steel{color:var(--steel)}
   .watch{color:var(--watch)} .dim{color:var(--dim)}
 
+  /* ---------- tahmin ---------- */
+  .fc-head{display:flex; justify-content:space-between; align-items:baseline;
+           padding-bottom:11px; border-bottom:1px solid var(--line)}
+  .fc-head .kova{font-size:13px}
+  .fc-head .n{font-size:11px; color:var(--dimmer)}
+  .fc-main{display:flex; gap:14px; padding:14px 0 12px}
+  .fc-main > div{flex:1}
+  .fc-main .k{font-size:10px; color:var(--dimmer); margin-bottom:4px}
+  .fc-main .v{font-size:18px}
+  .fc-main .s{font-size:10.5px; color:var(--dimmer); margin-top:3px}
+  .bar{height:5px; background:var(--panel2); border:1px solid var(--line);
+       position:relative; margin:9px 0 5px}
+  .bar span{position:absolute; top:0; bottom:0; background:var(--steel)}
+  .bar i{position:absolute; top:-3px; bottom:-3px; width:1px; background:var(--dim)}
+  .fc-foot{font-size:11px; color:var(--dim); line-height:1.6;
+           border-top:1px solid var(--line); padding-top:11px}
+
   .note{margin-top:28px; padding:13px 14px; border:1px solid var(--line);
         background:var(--panel2); font-size:11.5px; line-height:1.65; color:var(--dim)}
   .note b{color:var(--text); font-weight:500}
@@ -98,6 +115,9 @@
       <div><div class="k">Volatilite</div><div class="v mono" id="volp">—</div></div>
     </div>
   </div>
+
+  <div class="label">Yarın için tarihsel karşılaştırma</div>
+  <div class="panel" id="fc"><div class="dim" style="font-size:12.5px">yükleniyor…</div></div>
 
   <div class="label">Gün verisi</div>
   <div class="grid">
@@ -255,6 +275,8 @@ function render(d) {
   const v = q?.volume ?? m?.volume;
   $("vol").textContent = v ? (v / 1e6).toFixed(1) + "M" : "—";
 
+  renderForecast(d.forecast, d.baseline, d.metrics);
+
   const vp = $("viop");
   if (!d.viop.length) {
     vp.innerHTML = `<div class="dim" style="font-size:12.5px">Henüz VİOP verisi
@@ -275,6 +297,71 @@ function render(d) {
   $("stamp").textContent =
     "son güncelleme " + new Date(d.served_at).toLocaleString("tr-TR") +
     " · veri ~15 dk gecikmeli";
+}
+
+function renderForecast(f, base, m) {
+  const el = $("fc");
+
+  if (!f) {
+    el.innerHTML = `<div class="dim" style="font-size:12.5px">
+      Tarihsel karşılaştırma için <span class="mono">0003_forecast.sql</span>
+      henüz çalıştırılmamış.</div>`;
+    return;
+  }
+
+  const up = f.icgun_yukari_pct;
+  const tab = base?.icgun_yukari_pct ?? null;
+  const fark = tab === null ? null : up - tab;
+  const zayif = f.ornek_sayisi < 30 || (fark !== null && Math.abs(fark) < 3);
+
+  // gün içi dağılımın p25–p75 aralığını -4..+4 ölçeğine oturt
+  const scale = v => Math.max(0, Math.min(100, ((v + 4) / 8) * 100));
+  const a = scale(f.icgun_p25), b = scale(f.icgun_p75), mid = scale(f.icgun_medyan);
+
+  el.innerHTML = `
+    <div class="fc-head">
+      <div class="kova">Benzer günler: <span class="mono">${f.kova}</span></div>
+      <div class="n mono">${f.ornek_sayisi} gözlem</div>
+    </div>
+
+    <div class="fc-main">
+      <div>
+        <div class="k">Açılış (medyan boşluk)</div>
+        <div class="v mono ${f.gap_medyan > 0 ? "up" : f.gap_medyan < 0 ? "down" : "dim"}">
+          ${nf(f.acilis_medyan_tahmin)}</div>
+        <div class="s mono">${f.gap_medyan > 0 ? "+" : ""}${nf(f.gap_medyan)}%</div>
+      </div>
+      <div>
+        <div class="k">Gün içi yukarı kapanma</div>
+        <div class="v mono ${zayif ? "dim" : up > 55 ? "up" : up < 45 ? "down" : "watch"}">
+          ${nf(up, 0)}%</div>
+        <div class="s mono">taban ${tab === null ? "—" : nf(tab, 0) + "%"}${
+          fark === null ? "" : ` · fark ${fark > 0 ? "+" : ""}${nf(fark, 1)}`}</div>
+      </div>
+    </div>
+
+    <div class="bar">
+      <span style="left:${a}%; width:${Math.max(1, b - a)}%"></span>
+      <i style="left:${mid}%"></i>
+      <i style="left:50%; background:var(--line)"></i>
+    </div>
+    <div class="s mono" style="font-size:10px; color:var(--dimmer);
+         display:flex; justify-content:space-between">
+      <span>-4%</span>
+      <span>gün içi: medyan ${nf(f.icgun_medyan)}% · orta yarı
+        ${nf(f.icgun_p25)}…${nf(f.icgun_p75)}%</span>
+      <span>+4%</span>
+    </div>
+
+    <div class="fc-foot">
+      ${zayif
+        ? `Bu kovada kanıt zayıf: ${f.ornek_sayisi} gözlem ve tabandan fark
+           ${fark === null ? "ölçülemedi" : nf(Math.abs(fark), 1) + " puan"}.
+           Tek başına işlem kurmaya yetmez.`
+        : `Bu kovada yukarı kapanma oranı tabandan ${nf(Math.abs(fark), 1)} puan
+           ${fark > 0 ? "yüksek" : "düşük"}. Yine de ${f.ornek_sayisi} gözlemlik
+           bir bulgu — dönem ayrımında da tutup tutmadığına bak.`}
+    </div>`;
 }
 
 async function load() {
